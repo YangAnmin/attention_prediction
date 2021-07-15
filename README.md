@@ -5,6 +5,4 @@
 3. locate key voxels in both tasks as ROIs
 
 
-
-# sa_fa_prediction
-# attention_prediction
+ 
