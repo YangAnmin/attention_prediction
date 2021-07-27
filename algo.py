@@ -258,3 +258,32 @@ def p_threshold(path_beta,path_p,threshold):
     corrected_map = activation_map*is_above_t
 
     return corrected_map
+
+def vectorized_back(ori_array,modified_array):
+    """
+    the modified_array is manipulated by abs,and hense a scalar, lossing orientation information as a vector
+    the orientation information is preserved in ori_array, derterming whether a scalar is positive or negative
+    this function change a scalar back to vector
+
+    Parameter
+    ---------
+    ori_array: ndarray
+        1-D array, the original array storing orientation information
+    modified_array: ndarray
+        1-D array, the modified array lossing orientation information
+
+    Return
+    ------
+    vectorized_array: ndarray
+        1-D array, each item is a vector, storing both orientaiton information and modified value
+    """
+    mask = (ori_array<0)
+    input_array = list(modified_array)
+
+    for i in range(mask.size):
+        if mask[i]: # the original value is negtive
+            input_array[i] = -1*input_array[i]
+
+    vectorized_array = np.array(input_array)
+
+    return vectorized_array

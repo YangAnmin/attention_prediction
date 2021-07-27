@@ -80,7 +80,8 @@ X_sa = X_sa[:,mask_beta]
 ## train lasso with leave-one-out and independent hold-out data
     ### also used gird search for best C parameter, turned out the same regardless of the reduced featrues
 beta_pool = []
-leave_out_result = [] # tupple inside (train_accuracy,test_accuracy)
+leave_out_result = [] # tupple inside (train_accuracy,val_accuracy)
+test_result = []
 sa_result = []
 
 for train_index, test_index in loo.split(train_X_fa):
@@ -91,10 +92,11 @@ for train_index, test_index in loo.split(train_X_fa):
     beta_fa = pca.inverse_transform(coef_modified)
     beta_pool.append(beta_fa)
 
-    test_accuracy =  clf.score(train_X_fa[test_index], train_Y_fa[test_index])
+    val_accuracy =  clf.score(train_X_fa[test_index], train_Y_fa[test_index])
     train_accuracy = clf.score(train_X_fa[train_index],train_Y_fa[train_index])
-    leave_out_result.append((train_accuracy,test_accuracy))
+    leave_out_result.append((train_accuracy,val_accuracy))
 
+    test_result.append(clf.score(test_X_fa,test_Y_fa))
     sa_result.append(clf.score(X_sa,Y_sa))
 
 ### predict accuracy
@@ -104,12 +106,13 @@ val_acc_array = [i[1] for i in leave_out_result]
 ### save prediction results
 train_result = np.array(train_acc_array)
 val_result = np.array(val_acc_array)
+test_result = np.array(test_result)
 sa_result = np.array(sa_result)
-result_matrix = np.c_[train_result,val_result,sa_result]
-df_result = pd.DataFrame(result_matrix, columns=['train','val','sa'])
+result_matrix = np.c_[train_result,val_result,test_result,sa_result]
+df_result = pd.DataFrame(result_matrix, columns=['train','val','test','sa'])
 
 save_path = '/nfs/s2/userhome/yanganmin/workingdir/attention_data_complete/results'
-#df_result.to_csv(os.path.join(save_path,'train_fa','prediction_result.csv'))
+df_result.to_csv(os.path.join(save_path,'train_fa','prediction_result.csv'))
 
 ### average beta
 avg_beta = np.zeros(beta_pool[0].shape[0])
@@ -148,5 +151,3 @@ for iteration in range(sample_size):
     boot_coef = np.vstack((boot_coef,coef_mni))
 boot_coef = boot_coef[1:,:]
 np.save('/nfs/s2/userhome/yanganmin/workingdir/attention_data_complete/results/train_fa/beta_bootstrap',boot_coef)
-
- 

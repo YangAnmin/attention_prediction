@@ -81,6 +81,7 @@ X_fa = X_fa[:,mask_beta]
     ### also used gird search for best C parameter, turned out the same regardless of the reduced featrues
 beta_pool = []
 leave_out_result = [] # tupple inside (train_accuracy,test_accuracy)
+test_result = []
 fa_result = []
 
 for train_index, test_index in loo.split(train_X_sa):
@@ -95,6 +96,7 @@ for train_index, test_index in loo.split(train_X_sa):
     train_accuracy = clf.score(train_X_sa[train_index],train_Y_sa[train_index])
     leave_out_result.append((train_accuracy,test_accuracy))
 
+    test_result.append(clf.score(test_X_sa,test_Y_sa))
     fa_result.append(clf.score(X_fa,Y_fa))
 
 ### predict accuracy
@@ -104,12 +106,13 @@ val_acc_array = [i[1] for i in leave_out_result]
 ### save prediction results
 train_result = np.array(train_acc_array)
 val_result = np.array(val_acc_array)
+test_result = np.array(test_result)
 fa_result = np.array(fa_result)
-result_matrix = np.c_[train_result,val_result,fa_result]
-df_result = pd.DataFrame(result_matrix, columns=['train','val','fa'])
+result_matrix = np.c_[train_result,val_result,test_result,fa_result]
+df_result = pd.DataFrame(result_matrix, columns=['train','val','test','fa'])
 
 save_path = '/nfs/s2/userhome/yanganmin/workingdir/attention_data_complete/results'
-#df_result.to_csv(os.path.join(save_path,'train_sa','prediction_result.csv'))
+df_result.to_csv(os.path.join(save_path,'train_sa','prediction_result.csv'))
 
 ### average beta
 avg_beta = np.zeros(beta_pool[0].shape[0])
