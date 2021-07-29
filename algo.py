@@ -139,7 +139,7 @@ def mask_back(mask_matrix,value_matrix,mask_type):
 
 def bootstrap_data(original_data):
     """
-    bootstrap from orininal data to create a new data set, sample without replacement
+    bootstrap from orininal data to create a new data set, sample with replacement
 
     Parameter
     ---------
@@ -214,7 +214,7 @@ def to_mni(data_array):
         NiftiImage, with space and afine specific for this analysis
     """
     # acquire sample parameters
-    sample_path = '/nfs/s2/userhome/yanganmin/workingdir/attention_data_complete/data/S0001/1st_fa/beta_0001.nii'
+    sample_path = '/home/amyang/data/attention_signature/sample_data/S0001/1st_fa/beta_0001.nii'
     sample_nii = nib.load(sample_path)
     ori_shape = np.array(sample_nii.get_data()).shape
     affine = sample_nii.affine.copy()
